@@ -1,0 +1,42 @@
+require 'spec_helper'
+
+describe 'Defining a Document' do
+  context 'when a build action is not defined' do
+    it 'should raise an exception' do
+      expect {
+        Fixy::Document.new.generate
+      }.to raise_error(NotImplementedError)
+    end
+  end
+
+  context 'when a build action is defined' do
+    it 'should generate fixed width document' do
+
+      class IdentityRecord < Fixy::Record
+        set_record_length 20
+        include Fixy::Formatter::Alphanumeric
+        field :first_name, 10, '1-10' , :alphanumeric
+        field :last_name , 10, '11-20', :alphanumeric
+
+        def initialize(first_name, last_name)
+          @first_name = first_name
+          @last_name  = last_name
+        end
+
+        field_value :first_name, -> { @first_name }
+        field_value :last_name , -> { @last_name  }
+      end
+
+      class PeopleDocument < Fixy::Document
+        def build
+          append_record  IdentityRecord.new('Sarah', 'Kerrigan')
+          append_record  IdentityRecord.new('Jim', 'Raynor')
+          prepend_record IdentityRecord.new('Arcturus', 'Mengsk')
+        end
+      end
+
+      PeopleDocument.new.generate "Arcturus  Mengsk    \nSarah     Kerrigan  \nJim       Raynor   "
+      PeopleDocument.new.generate(true).should eq File.read('spec/fixtures/debug_document.txt')
+    end
+  end
+end
