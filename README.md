@@ -106,7 +106,7 @@ A document is composed of a multitude of records (instances of a `Fixy::Record`)
 class PeopleDocument < Fixy::Document
   def build
     append_record  PersonRecord.new('Sarah', 'Kerrigan')
-    append_record  PersonRecordnew('Jim', 'Raynor')
+    append_record  PersonRecord.new('Jim', 'Raynor')
     prepend_record PersonRecord.new('Arcturus', 'Mengsk')
   end
 end
