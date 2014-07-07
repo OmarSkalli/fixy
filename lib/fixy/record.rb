@@ -1,7 +1,5 @@
 module Fixy
   class Record
-    require 'active_support/core_ext/proc'
-
     class << self
       def set_record_length(count)
         define_singleton_method('record_length') { count }
@@ -45,7 +43,7 @@ module Fixy
         end
 
         if value.is_a? Proc
-          define_method(name) { value.bind(self).call }
+          define_method(name) { self.instance_exec(&value) }
         else
           define_method(name) { value }
         end
