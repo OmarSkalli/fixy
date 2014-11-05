@@ -54,7 +54,11 @@ module Fixy
       end
 
       def default_record_fields
-        superclass.respond_to?(:record_fields, true) && superclass.record_fields || {}
+        if superclass.respond_to?(:record_fields, true) && superclass.record_fields
+          superclass.record_fields.dup
+        else
+          {}
+        end
       end
     end
 
