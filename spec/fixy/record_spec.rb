@@ -93,4 +93,26 @@ describe 'Generating a Record' do
       }.to raise_error(StandardError, "Undefined field for position 19")
     end
   end
+
+  context 'when inheriting from another record' do
+    it 'should include fields from the superclass' do
+      class PersonRecordG < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+        set_record_length 20
+
+        field :first_name, 10, '1-10' , :alphanumeric
+        field_value :first_name, -> { 'Parent' }
+      end
+
+      class PersonRecordH < PersonRecordG
+        include Fixy::Formatter::Alphanumeric
+        set_record_length 20
+        field :last_name , 10,  '11-20', :alphanumeric
+        field_value :last_name,  -> { 'Child' }
+      end
+
+      PersonRecordH.new.generate.slice(0, 10).should eq 'Parent    '
+      PersonRecordH.new.generate.slice(10, 10).should eq 'Child     '
+    end
+  end
 end
