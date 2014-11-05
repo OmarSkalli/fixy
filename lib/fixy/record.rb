@@ -6,7 +6,7 @@ module Fixy
       end
 
       def field(name, size, range, type)
-        @record_fields ||= {}
+        @record_fields ||= default_record_fields
         range_matches = range.match /^(\d+)(?:-(\d+))?$/
 
         # Make sure inputs are valid, we rather fail early than behave unexpectedly later.
@@ -51,6 +51,14 @@ module Fixy
 
       def record_fields
         @record_fields
+      end
+
+      def default_record_fields
+        if superclass.respond_to?(:record_fields, true) && superclass.record_fields
+          superclass.record_fields.dup
+        else
+          {}
+        end
       end
     end
 
