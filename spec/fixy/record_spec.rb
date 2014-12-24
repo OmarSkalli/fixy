@@ -57,24 +57,29 @@ end
 
 describe 'Generating a Record' do
   context 'when properly defined' do
-    it 'should generate fixed width record' do
-      class PersonRecordE < Fixy::Record
-        include Fixy::Formatter::Alphanumeric
+    class PersonRecordE < Fixy::Record
+      include Fixy::Formatter::Alphanumeric
 
-        set_record_length 20
+      set_record_length 20
 
-        field :first_name, 10, '1-10' , :alphanumeric
-        field :last_name , 10, '11-20', :alphanumeric
+      field :first_name, 10, '1-10' , :alphanumeric
+      field :last_name , 10, '11-20', :alphanumeric
 
-        field_value :first_name, -> { 'Sarah' }
+      field_value :first_name, -> { 'Sarah' }
 
-        def last_name
-          'Kerrigan'
-        end
+      def last_name
+        'Kerrigan'
       end
+    end
 
+    it 'should generate fixed width record' do
       PersonRecordE.new.generate.should eq "Sarah     Kerrigan  \n"
-      PersonRecordE.new.generate(true).should eq File.read('spec/fixtures/debug_record.txt')
+    end
+
+    context 'when using the debug flag' do
+      it 'should produce a debug log' do
+        PersonRecordE.new.generate(true).should eq File.read('spec/fixtures/debug_record.txt')
+      end
     end
   end
 
@@ -149,6 +154,18 @@ describe 'Generating a Record' do
         PersonRecordI.new.generate.slice(0, 10).should eq 'Bob       '
         PersonRecordI.new.generate.slice(10, 10).should eq 'Jacobs    '
       end
+    end
+  end
+
+  context 'when a block is passed to field' do
+    class PersonRecordJ < Fixy::Record
+      include Fixy::Formatter::Alphanumeric
+      set_record_length 20
+      field(:description , 20, '1-20', :alphanumeric) { 'Use My Value' }
+    end
+
+    it 'uses the proc conversion as the field value' do
+      PersonRecordJ.new.generate.should eq('Use My Value'.ljust(20) << "\n")
     end
   end
 end
