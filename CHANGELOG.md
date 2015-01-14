@@ -1,3 +1,8 @@
+## v0.0.3
+
+* Allow passing block to field to define field_value
+* Update handling of multi-byte characters
+
 ## v0.0.2
 
 * Fixed typos in README
