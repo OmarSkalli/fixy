@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'spec_helper'
 
 describe 'Defining a Record' do
@@ -74,6 +75,24 @@ describe 'Generating a Record' do
 
       PersonRecordE.new.generate.should eq "Sarah     Kerrigan  \n"
       PersonRecordE.new.generate(true).should eq File.read('spec/fixtures/debug_record.txt')
+    end
+  end
+
+  context 'when dealing with multi-byte characters' do
+    it 'should generate fixed width record' do
+      class PersonRecordMultibyte < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+
+        set_record_length 9
+
+        field :name, 9, '1-9' , :alphanumeric
+
+        field_value :name, -> { "12345678И" }
+      end
+
+      value = PersonRecordMultibyte.new.generate
+      value.should be_valid_encoding
+      value.should == "12345678 \n"
     end
   end
 

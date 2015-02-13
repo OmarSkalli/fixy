@@ -9,15 +9,22 @@ module Fixy
       # left-justified and filled with spaces.
       #
 
-      def format_alphanumeric(input, bytes)
-        input_string = String.new(input.to_s)
-        truncated_bytesize = [input_string.bytesize, bytes].min
-        if truncated_bytesize < bytes
-          input_string << " " * (bytes - truncated_bytesize)
-          input_string
+      def format_alphanumeric(input, byte_width)
+        result = ''
+
+        if input.bytesize <= byte_width
+          result = input.dup
         else
-          input_string.byteslice(0..(truncated_bytesize - 1))
+          input.each_char do |char|
+            if result.bytesize + char.bytesize <= byte_width
+              result << char
+            else
+              break
+            end
+          end
         end
+
+        result << " " * (byte_width - result.bytesize)
       end
     end
   end
