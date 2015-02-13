@@ -36,5 +36,9 @@ module Fixy
     def append_record(record)
       @content << record.generate(debug_mode)
     end
+
+    def parse_record(klass, record)
+      @content << klass.parse(record, debug_mode)[:record]
+    end
   end
 end

@@ -62,13 +62,50 @@ module Fixy
           {}
         end
       end
-    end
 
-    attr_accessor :debug_mode
+      # Parse an existing record
+      def parse(record, debug = false)
+        raise ArgumentError, 'Record must be a string'  unless record.is_a? String
+
+        unless record.length == record_length
+          raise ArgumentError, "Record length is invalid (Expected #{record_length})"
+        end
+
+        decorator = debug ? Fixy::Decorator::Debug : Fixy::Decorator::Default
+        fields = []
+        output = ''
+        current_position = 1
+        current_record = 1
+
+        while current_position <= record_length do
+
+          field = record_fields[current_position]
+          raise StandardError, "Undefined field for position #{current_position}" unless field
+
+          # Extract field data from existing record
+          from   = field[:from] - 1
+          to     = field[:to]   - 1
+          method = field[:name]
+          value  = record[from..to]
+
+          formatted_value = decorator.field(value, current_record, current_position, method, field[:size], field[:type])
+          output << formatted_value
+          fields << { name:  method, value: value }
+
+          current_position = field[:to] + 1
+          current_record += 1
+        end
+
+        # Documentation mandates that every record ends with new line.
+        output << "\n"
+
+        { fields: fields, record: decorator.record(output) }
+      end
+    end
 
     # Generate the entry based on the record structure
     def generate(debug = false)
-      @debug_mode = debug
+      decorator = debug ? Fixy::Decorator::Debug : Fixy::Decorator::Default
       output = ''
       current_position = 1
       current_record = 1
@@ -106,10 +143,6 @@ module Fixy
     # Retrieves the list of record fields that were set through the class methods.
     def record_fields
       self.class.record_fields
-    end
-
-    def decorator
-      debug_mode ? Fixy::Decorator::Debug : Fixy::Decorator::Default
     end
   end
 end
