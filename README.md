@@ -100,6 +100,24 @@ PersonRecord.new('Sarah', 'Kerrigan').generate
 
 Most of the time however, you will not have to call `generate` directly, as the document will take care of that part.
 
+
+### Parsing existing records
+
+There is limited support for parsing existing records and documents. Because the formatters are currently uni-directionals, formatted values are extracted.
+
+```ruby
+PersonRecord.parse "Sarah     Kerrigan  "
+
+# This will generate the following hash
+# {
+#     :fields => [
+#         { :name => :first_name, :value => "Sarah     "},
+#         { :name => :last_name,  :value => "Kerrigan  "}
+#     ],
+#     :record => "Sarah     Kerrigan  \n"
+# }
+```
+
 ## Document definition
 
 A document is composed of a multitude of records (instances of a `Fixy::Record`). Because some document specification require earlier records to contain a count of upcoming records, both appending and prepending records is supported during a document definition. Below is an example of a document, based on the record defined in the previous section.
@@ -113,6 +131,23 @@ class PeopleDocument < Fixy::Document
   end
 end
 ```
+
+### Document definition using existing records
+
+Occasionally, it is useful to generate a document using existing records. This is particularly handy when generating debug documents (detailed in the next section).
+
+
+```ruby
+class ParsedPeopleDocument < Fixy::Document
+  def build
+		parse_record IdentityRecord, 'Arcturus  Mengsk    '
+		parse_record IdentityRecord, 'Sarah     Kerrigan  '
+		parse_record IdentityRecord, 'Jim       Raynor    '
+	end
+end
+```
+
+
 
 ## Generating a document
 

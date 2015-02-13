@@ -169,3 +169,80 @@ describe 'Generating a Record' do
     end
   end
 end
+
+describe 'Parsing a record' do
+  context 'when properly defined' do
+    let(:record) { "Sarah     Kerrigan  " }
+    class PersonRecordK < Fixy::Record
+      include Fixy::Formatter::Alphanumeric
+
+      set_record_length 20
+
+      field :first_name, 10, '1-10' , :alphanumeric
+      field :last_name , 10, '11-20', :alphanumeric
+
+      field_value :first_name, -> { 'Sarah' }
+
+      def last_name
+        'Kerrigan'
+      end
+    end
+
+    it 'should generate fixed width record' do
+      PersonRecordE.parse(record).should eq({
+        record: (record + "\n"),
+        fields: [
+          { name: :first_name, value: 'Sarah     '},
+          { name: :last_name,  value: 'Kerrigan  '}
+        ]
+      })
+    end
+
+    context 'when using the debug flag' do
+      it 'should produce a debug log' do
+        PersonRecordE.parse(record, true).should eq({
+          record: File.read('spec/fixtures/debug_parsed_record.txt'),
+          fields: [
+            { name: :first_name, value: 'Sarah     '},
+            { name: :last_name,  value: 'Kerrigan  '}
+          ]
+        })
+      end
+    end
+
+    context 'when invalid record provided' do
+      context 'with a non-string record type' do
+        it 'should raise an error' do
+          expect {
+            PersonRecordE.parse(nil, true)
+          }.to raise_error(StandardError, 'Record must be a string')
+        end
+      end
+
+      context 'with an invalid record length' do
+        it 'should raise an error' do
+          expect {
+            PersonRecordE.parse('', true)
+          }.to raise_error(StandardError, 'Record length is invalid (Expected 20)')
+        end
+      end
+    end
+  end
+
+  context 'when definition is incomplete (e.g. undefined columns)' do
+    it 'should raise an error' do
+      class PersonRecordL < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+        set_record_length 20
+        field :first_name, 10, '1-10' , :alphanumeric
+        field :last_name , 8,  '11-18', :alphanumeric
+        field_value :first_name, -> { 'Sarah' }
+        field_value :last_name,  -> { 'Kerrigan' }
+      end
+
+      expect {
+        PersonRecordL.parse(' ' * 20)
+      }.to raise_error(StandardError, "Undefined field for position 19")
+    end
+  end
+end
