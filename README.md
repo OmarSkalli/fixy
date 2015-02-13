@@ -87,6 +87,13 @@ class PersonRecord < Fixy::Record
 end
 ```
 
+You can also specify the field definition and field value together by passing a block to `field`.
+
+```ruby
+
+field(:first_name, 10, '1-10', :alphanumeric) { @first_name }
+```
+
 Given a record definition, you can generate a single line (e.g. for testing purposes):
 
 ```ruby
@@ -152,16 +159,16 @@ An example for formatter definition:
 ```ruby
 
 module Fixy
-	module Formatter
-		module Numeric
-    		def format_numeric(input, length)
-      			input = input.to_s
-      			raise ArgumentError, "Invalid Input (only digits are accepted)" unless input =~ /^\d+$/
-      			raise ArgumentError, "Not enough length (input: #{input}, length: #{length})" if input.length > length
-      			input.rjust(length, '0')
-           end
-  		end
-	end
+  module Formatter
+    module Numeric
+      def format_numeric(input, length)
+        input = input.to_s
+        raise ArgumentError, "Invalid Input (only digits are accepted)" unless input =~ /^\d+$/
+        raise ArgumentError, "Not enough length (input: #{input}, length: #{length})" if input.length > length
+        input.rjust(length, '0')
+      end
+    end
+  end
 end
 ```
 
