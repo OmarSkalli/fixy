@@ -1,6 +1,6 @@
 ## fixy
 
-Library for generating fixed width flat file documents. 
+Library for generating fixed width in bytes flat file documents. 
 
 ## Installation
 
@@ -33,7 +33,7 @@ A fixed-width document (`Fixy::Document`) is composed of multiple single-line re
 
 Every record is defined through a specific format, which defines the following aspects:
 
-* Record length (how many characters in the line)
+* Record length (how many bytes in the line)
 * Required formatters (e.g. Alphanumeric, Rate, Amount)
 * Field declaration:
 	* Field human readable name
