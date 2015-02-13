@@ -1,3 +1,7 @@
+## v0.0.4
+
+* Basic support for parsing records
+
 ## v0.0.3
 
 * Allow passing block to field to define field_value
