@@ -77,6 +77,23 @@ describe 'Generating a Record' do
     end
   end
 
+  context 'when dealing with multi-byte characters' do
+    it 'should generate fixed width record' do
+      class PersonRecordMultibyte < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+
+        set_record_length 9
+
+        field :name, 9, '1-9' , :alphanumeric
+
+        field_value :name, -> { "Тарас Иванов"  }
+      end
+
+      value = PersonRecordMultibyte.new.generate
+      value.should be_valid_encoding
+    end
+  end
+
   context 'when definition is incomplete (e.g. undefined columns)' do
     it 'should raise an error' do
       class PersonRecordF < Fixy::Record
