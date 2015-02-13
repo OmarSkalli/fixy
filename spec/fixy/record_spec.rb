@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'spec_helper'
 
 describe 'Defining a Record' do
@@ -86,7 +87,7 @@ describe 'Generating a Record' do
 
         field :name, 9, '1-9' , :alphanumeric
 
-        field_value :name, -> { "12345678И"  }
+        field_value :name, -> { "12345678И" }
       end
 
       value = PersonRecordMultibyte.new.generate
