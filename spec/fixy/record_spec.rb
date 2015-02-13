@@ -86,12 +86,12 @@ describe 'Generating a Record' do
 
         field :name, 9, '1-9' , :alphanumeric
 
-        field_value :name, -> { "сараТ вонавИ"  }
+        field_value :name, -> { "12345678И"  }
       end
 
       value = PersonRecordMultibyte.new.generate
       value.should be_valid_encoding
-      value.should == "сара \n"
+      value.should == "12345678 \n"
     end
   end
 
