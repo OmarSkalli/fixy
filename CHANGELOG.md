@@ -1,3 +1,7 @@
+## v0.0.5
+
+* Allow nil values for alphanumeric formatter
+
 ## v0.0.4
 
 * Basic support for parsing records
