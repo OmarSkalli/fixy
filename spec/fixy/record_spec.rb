@@ -101,6 +101,23 @@ describe 'Generating a Record' do
     end
   end
 
+  context 'when a field value is nil' do
+    it 'should emit spaces' do
+      class PersonRecordNil < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+
+        set_record_length 9
+
+        field :name, 9, '1-9' , :alphanumeric
+
+        field_value :name, -> { nil }
+      end
+
+      value = PersonRecordNil.new.generate
+      value.should == "         \n"
+    end
+  end
+
   context 'when definition is incomplete (e.g. undefined columns)' do
     it 'should raise an error' do
       class PersonRecordF < Fixy::Record
