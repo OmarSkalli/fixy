@@ -10,12 +10,13 @@ module Fixy
       #
 
       def format_alphanumeric(input, byte_width)
+        input_string = String.new(input.to_s)
         result = ''
 
-        if input.bytesize <= byte_width
-          result = input.dup
+        if input_string.bytesize <= byte_width
+          result << input_string
         else
-          input.each_char do |char|
+          input_string.each_char do |char|
             if result.bytesize + char.bytesize <= byte_width
               result << char
             else
@@ -24,7 +25,7 @@ module Fixy
           end
         end
 
-        result << " " * (byte_width - result.bytesize)
+        result << ' ' * (byte_width - result.bytesize)
       end
     end
   end
