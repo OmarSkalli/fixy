@@ -64,7 +64,7 @@ module Fixy
       end
 
       # Parse an existing record
-      def parse(record, debug = false)
+      def parse(record, debug = false, line_ending = "\n")
         raise ArgumentError, 'Record must be a string'  unless record.is_a? String
 
         unless record.length == record_length
@@ -97,14 +97,14 @@ module Fixy
         end
 
         # Documentation mandates that every record ends with new line.
-        output << "\n"
+        output << line_ending
 
         { fields: fields, record: decorator.record(output) }
       end
     end
 
     # Generate the entry based on the record structure
-    def generate(debug = false)
+    def generate(debug = false, line_ending = "\n")
       decorator = debug ? Fixy::Decorator::Debug : Fixy::Decorator::Default
       output = ''
       current_position = 1
@@ -127,7 +127,7 @@ module Fixy
       end
 
       # Documentation mandates that every record ends with new line.
-      output << "\n"
+      output << line_ending
 
       # All ready. In the words of Mr. Peters: "Take it and go!"
       decorator.record(output)

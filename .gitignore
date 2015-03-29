@@ -18,4 +18,4 @@ test/version_tmp
 tmp
 /pmip
 .ruby-version
-
+.DS_Store
