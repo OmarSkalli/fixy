@@ -188,6 +188,25 @@ describe 'Generating a Record' do
 end
 
 describe 'Parsing a record' do
+  let(:multibyte_record) { 'älimuk   Karil     ' }
+  context 'with a record of multi-byte characters' do
+    it 'should not raise with the right number of bytes' do
+      PersonRecordE.parse(multibyte_record, true).should eq({
+        record: File.read('spec/fixtures/debug_parsed_multibyte_record.txt'),
+      fields: [
+        { name: :first_name, value: 'älimuk   '},
+        { name: :last_name,  value: 'Karil     '}
+      ]
+      })
+    end
+
+    it 'should not raise with the right amount' do
+      expect {
+        PersonRecordE.parse('älimuk  Karil     ', true)
+      }.to raise_error(StandardError, 'Record length is invalid (Expected 20)')
+    end
+  end
+
   context 'when properly defined' do
     let(:record) { "Sarah     Kerrigan  " }
     class PersonRecordK < Fixy::Record
