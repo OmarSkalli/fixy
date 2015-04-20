@@ -1,3 +1,7 @@
+## v0.0.6
+
+* Support for multi-byte record parsing
+
 ## v0.0.5
 
 * Allow nil values for alphanumeric formatter
