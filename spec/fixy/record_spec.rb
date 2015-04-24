@@ -10,6 +10,8 @@ describe 'Defining a Record' do
 
           set_record_length 20
 
+          set_line_ending Fixy::Record::LINE_ENDING_CRLF
+
           field :first_name, 10, '1-10' , :alphanumeric
           field :last_name , 10, '11-20', :alphanumeric
         end
@@ -183,6 +185,19 @@ describe 'Generating a Record' do
 
     it 'uses the proc conversion as the field value' do
       PersonRecordJ.new.generate.should eq('Use My Value'.ljust(20) << "\n")
+    end
+  end
+
+  context 'when setting a line ending' do
+    class PersonRecordWithLineEnding < Fixy::Record
+      include Fixy::Formatter::Alphanumeric
+      set_record_length 20
+      set_line_ending Fixy::Record::LINE_ENDING_CRLF
+      field(:description , 20, '1-20', :alphanumeric) { 'Use My Value' }
+    end
+
+    it 'uses the given line ending' do
+      PersonRecordWithLineEnding.new.generate.should eq('Use My Value'.ljust(20) << "\r\n")
     end
   end
 end
