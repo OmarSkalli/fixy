@@ -1,8 +1,17 @@
 module Fixy
   class Record
+    LINE_ENDING_LF = "\n".freeze
+    LINE_ENDING_CR = "\r".freeze
+    LINE_ENDING_CRLF = "#{LINE_ENDING_CR}#{LINE_ENDING_LF}".freeze
+    DEFAULT_LINE_ENDING = LINE_ENDING_LF
+
     class << self
       def set_record_length(count)
         define_singleton_method('record_length') { count }
+      end
+
+      def set_line_ending(character)
+        @line_ending = character
       end
 
       def field(name, size, range, type)
@@ -55,6 +64,11 @@ module Fixy
         @record_fields
       end
 
+      def line_ending
+        # Use the default line ending unless otherwise specified
+        @line_ending || DEFAULT_LINE_ENDING
+      end
+
       def default_record_fields
         if superclass.respond_to?(:record_fields, true) && superclass.record_fields
           superclass.record_fields.dup
@@ -98,7 +112,7 @@ module Fixy
         end
 
         # Documentation mandates that every record ends with new line.
-        output << "\n"
+        output << line_ending
 
         { fields: fields, record: decorator.record(output) }
       end
@@ -128,7 +142,7 @@ module Fixy
       end
 
       # Documentation mandates that every record ends with new line.
-      output << "\n"
+      output << line_ending
 
       # All ready. In the words of Mr. Peters: "Take it and go!"
       decorator.record(output)
@@ -144,6 +158,11 @@ module Fixy
     # Retrieves the list of record fields that were set through the class methods.
     def record_fields
       self.class.record_fields
+    end
+
+    # Retrieves the line ending for this record type
+    def line_ending
+      self.class.line_ending
     end
   end
 end
