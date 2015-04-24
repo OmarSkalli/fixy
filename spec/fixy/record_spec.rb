@@ -222,6 +222,18 @@ describe 'Parsing a record' do
     end
   end
 
+  context 'with custom line endings' do
+    let(:record) { "Use My Value        " }
+    it 'should generate fixed width record' do
+      PersonRecordWithLineEnding.parse(record).should eq({
+        record: (record + Fixy::Record::LINE_ENDING_CRLF),
+        fields: [
+          { name: :description,  value: 'Use My Value        '}
+        ]
+      })
+    end
+  end
+
   context 'when properly defined' do
     let(:record) { "Sarah     Kerrigan  " }
     class PersonRecordK < Fixy::Record
