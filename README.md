@@ -36,6 +36,7 @@ A fixed-width document (`Fixy::Document`) is composed of multiple single-line re
 Every record is defined through a specific format, which defines the following aspects:
 
 * Record length (how many characters in the line)
+* Line ending (optional, defaults to "\n")
 * Required formatters (e.g. Alphanumeric, Rate, Amount)
 * Field declaration:
 	* Field human readable name
@@ -92,6 +93,11 @@ You can also specify the field definition and field value together by passing a 
 ```ruby
 
 field(:first_name, 10, '1-10', :alphanumeric) { @first_name }
+```
+If a record requires a specific line ending, you can specify it as part of the Record definition.
+
+```ruby
+  set_line_ending Fixy::Record::LINE_ENDING_CRLF
 ```
 
 Given a record definition, you can generate a single line (e.g. for testing purposes):
