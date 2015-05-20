@@ -1,3 +1,7 @@
+## v0.0.7
+
+* Added support for custom line ending.
+
 ## v0.0.6
 
 * Support for multi-byte record parsing
