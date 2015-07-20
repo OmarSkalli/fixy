@@ -10,7 +10,7 @@ module Fixy
       #
 
       def format_alphanumeric(input, byte_width)
-        input_string = String.new(input.to_s)
+        input_string = String.new(input.to_s).tr "#{self.class::LINE_ENDING_CRLF}#{line_ending}", ''
         result = ''
 
         if input_string.bytesize <= byte_width

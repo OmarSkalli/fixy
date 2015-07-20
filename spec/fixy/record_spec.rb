@@ -120,6 +120,23 @@ describe 'Generating a Record' do
     end
   end
 
+  context 'when a field value contains the record separator' do
+    it 'should strip that separator' do
+      class PersonRecordNewLine < Fixy::Record
+        include Fixy::Formatter::Alphanumeric
+
+        set_record_length 9
+
+        field :name, 9, '1-9' , :alphanumeric
+
+        field_value :name, -> { "Two\nLine" }
+      end
+
+      value = PersonRecordNewLine.new.generate
+      value.should == "TwoLine  \n"
+    end
+  end
+
   context 'when definition is incomplete (e.g. undefined columns)' do
     it 'should raise an error' do
       class PersonRecordF < Fixy::Record
