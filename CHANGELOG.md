@@ -1,3 +1,7 @@
+## v0.0.8
+
+* Strip line endings from fields in record.
+
 ## v0.0.7
 
 * Added support for custom line ending.
