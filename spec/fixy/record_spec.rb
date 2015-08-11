@@ -58,6 +58,30 @@ describe 'Defining a Record' do
 end
 
 describe 'Generating a Record' do
+
+  context 'when formatting field values' do
+
+    class PersonRecordWithInvalidFormatter < Fixy::Record
+      include Fixy::Formatter::Alphanumeric
+
+      set_record_length 20
+
+      def format_incorrect(input, length)
+        'X' * (length * 2)
+      end
+
+      field :first_name, 10, '1-10' , :alphanumeric
+      field :last_name , 10, '11-20', :incorrect
+
+      field_value :first_name, -> { 'Bob' }
+      field_value :last_name, -> { 'Smith' }
+    end
+
+    it 'should raise an error if the formatter returns a string longer than the field size' do
+      expect { PersonRecordWithInvalidFormatter.new.generate }.to raise_error(StandardError)
+    end
+  end
+
   context 'when properly defined' do
     class PersonRecordE < Fixy::Record
       include Fixy::Formatter::Alphanumeric

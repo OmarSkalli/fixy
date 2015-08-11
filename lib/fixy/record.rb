@@ -140,6 +140,8 @@ module Fixy
           raise $!, "Error while formatting `#{field[:name]}` -- #{$!}", $!.backtrace
         end
 
+        raise StandardError, "formatted value for `#{field[:name]}` violates size constraint (expected: #{field[:size]}, actual: #{formatted_value.length}), formatter: #{field[:type]}" if formatted_value.length != field[:size]
+
         formatted_value = decorator.field(formatted_value, current_record, current_position, method, field[:size], field[:type])
 
         output << formatted_value
