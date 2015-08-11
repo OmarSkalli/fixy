@@ -133,7 +133,13 @@ module Fixy
         # We will first retrieve the value, then format it
         method          = field[:name]
         value           = send(method)
-        formatted_value = format_value(value, field[:size], field[:type])
+
+        begin
+          formatted_value = format_value(value, field[:size], field[:type])
+        rescue => e
+          raise $!, "Error while formatting `#{field[:name]}` -- #{$!}", $!.backtrace
+        end
+
         formatted_value = decorator.field(formatted_value, current_record, current_position, method, field[:size], field[:type])
 
         output << formatted_value
