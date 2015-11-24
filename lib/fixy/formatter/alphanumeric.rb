@@ -27,6 +27,11 @@ module Fixy
 
         result << ' ' * (byte_width - result.bytesize)
       end
+
+      def parse_alphanumeric( value )
+        value = value.rstrip
+        value.length == 0 ? nil : value
+      end
     end
   end
 end

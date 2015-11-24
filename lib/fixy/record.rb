@@ -77,44 +77,80 @@ module Fixy
         end
       end
 
-      # Parse an existing record
-      def parse(record, debug = false)
-        raise ArgumentError, 'Record must be a string'  unless record.is_a? String
+      def each_field( record )
+        record = sanitize_record( record )
 
-        unless record.bytesize == record_length
-          raise ArgumentError, "Record length is invalid (Expected #{record_length})"
-        end
-
-        decorator = debug ? Fixy::Decorator::Debug : Fixy::Decorator::Default
-        fields = []
-        output = ''
         current_position = 1
-        current_record = 1
+        field_number = 1
 
         byte_record = record.bytes.to_a
         while current_position <= record_length do
+          field = field_for_position( current_position )
 
-          field = record_fields[current_position]
-          raise StandardError, "Undefined field for position #{current_position}" unless field
-
-          # Extract field data from existing record
-          from   = field[:from] - 1
-          to     = field[:to]   - 1
+          value = extract_field_value( byte_record, field )
           method = field[:name]
-          value  = byte_record[from..to].pack('C*').force_encoding('utf-8')
 
-          formatted_value = decorator.field(value, current_record, current_position, method, field[:size], field[:type])
-          output << formatted_value
-          fields << { name:  method, value: value }
+          yield( field, field_number, current_position, method, value )
 
           current_position = field[:to] + 1
-          current_record += 1
+          field_number += 1
+        end
+
+        nil
+      end
+
+      # Parse an existing record into an array of fields
+      def parse(record, debug = false)
+        decorator = debug ? Fixy::Decorator::Debug : Fixy::Decorator::Default
+        fields = []
+        output = ''
+
+        each_field(record) do |field, field_number, current_position, method, value|
+
+          formatted_value = decorator.field(value, field_number, current_position, method, field[:size], field[:type])
+          output << formatted_value
+          fields << { name: method, value: value }
         end
 
         # Documentation mandates that every record ends with new line.
         output << line_ending
 
         { fields: fields, record: decorator.record(output) }
+      end
+
+      # Parse fixed width record into a model (assign attributes)
+      def parse_record( record )
+        model = self.new
+
+        each_field(record) do |field, field_number, current_position, method, value|
+          parse_method = "parse_#{field[:type]}"
+          value = model.respond_to?(parse_method) ? model.send(parse_method, value) : value
+          model.send("#{method}=", value)
+        end
+
+        model
+      end
+
+      def sanitize_record( record )
+        raise ArgumentError, 'Record must be a string'  unless record.is_a? String
+        record = record.gsub(line_ending, '')
+        unless record.bytesize == record_length
+          raise ArgumentError, "Record length is invalid (Expected #{record_length})"
+        end
+        record
+      end
+
+      def field_for_position( position )
+        field = record_fields[position]
+        raise StandardError, "Undefined field for position #{position}" unless field
+        field
+      end
+
+      # Extract field data from existing record
+      def extract_field_value( byte_record, field )
+        from   = field[:from] - 1
+        to     = field[:to]   - 1
+        byte_record[from..to].pack('C*').force_encoding('utf-8')
       end
     end
 
