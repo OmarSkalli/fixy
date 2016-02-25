@@ -12,3 +12,6 @@ require 'fixy/formatter/upcase_alphanumeric'
 require 'fixy/formatter/upcase_ascii'
 require 'fixy/record'
 require 'fixy/version'
+require 'i18n'
+
+I18n.load_path << File.expand_path('../fixy/locale/en.yml', __FILE__)
