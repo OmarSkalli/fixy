@@ -50,5 +50,10 @@ describe 'Defining a Document' do
       ParsedPeopleDocument.new.generate.should eq "Arcturus  Mengsk    \nSarah     Kerrigan  \nJim       Raynor    \n"
       ParsedPeopleDocument.new.generate(true).should eq File.read('spec/fixtures/debug_document.txt')
     end
+
+    it 'should apply custom line endings if given' do
+      ParsedPeopleDocument.new.generate(false, "\r\n").should eq "Arcturus  Mengsk    \r\nSarah     Kerrigan  \r\nJim       Raynor    \r\n"
+      ParsedPeopleDocument.new.generate(true, "\r\n").should eq File.read('spec/fixtures/debug_document_custom_line_endings.txt')
+    end
   end
 end

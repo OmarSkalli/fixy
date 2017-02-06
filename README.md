@@ -214,6 +214,14 @@ end
 ```
 
 
+## Custom line endings
+
+The default line ending is '\n' (Linux/OSX standard). A different line ending can be applied by passing it as the 2nd argument to the Document's generate method.  For example, if you wanted to generate a document without debug_mode and apply Windows standard line endings, you would do this:
+
+```ruby
+PeopleDocument.new.generate(false, '\r\n')
+```
+
 
 ## Contributing
 

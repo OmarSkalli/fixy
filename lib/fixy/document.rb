@@ -1,7 +1,7 @@
 module Fixy
   class Document
 
-    attr_accessor :content, :debug_mode
+    attr_accessor :content, :debug_mode, :line_ending
 
     def generate_to_file(path, debug = false)
       File.open(path, 'w') do |file|
@@ -9,8 +9,9 @@ module Fixy
       end
     end
 
-    def generate(debug = false)
+    def generate(debug = false, line_ending = "\n")
       @debug_mode = debug
+      @line_ending = line_ending
       @content = ''
 
       # Generate document based on user logic.
@@ -30,15 +31,15 @@ module Fixy
     end
 
     def prepend_record(record)
-      @content = record.generate(debug_mode) << @content
+      @content = record.generate(debug_mode, line_ending) << @content
     end
 
     def append_record(record)
-      @content << record.generate(debug_mode)
+      @content << record.generate(debug_mode, line_ending)
     end
 
     def parse_record(klass, record)
-      @content << klass.parse(record, debug_mode)[:record]
+      @content << klass.parse(record, debug_mode, line_ending)[:record]
     end
   end
 end
