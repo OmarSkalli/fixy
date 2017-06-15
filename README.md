@@ -153,10 +153,10 @@ Occasionally, it is useful to generate a document using existing records. This i
 ```ruby
 class ParsedPeopleDocument < Fixy::Document
   def build
-		parse_record IdentityRecord, 'Arcturus  Mengsk    '
-		parse_record IdentityRecord, 'Sarah     Kerrigan  '
-		parse_record IdentityRecord, 'Jim       Raynor    '
-	end
+    parse_record IdentityRecord, 'Arcturus  Mengsk    '
+    parse_record IdentityRecord, 'Sarah     Kerrigan  '
+    parse_record IdentityRecord, 'Jim       Raynor    '
+  end
 end
 ```
 
