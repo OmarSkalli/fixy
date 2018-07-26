@@ -61,12 +61,12 @@ module Fixy
       end
 
       def record_fields
-        @record_fields
+        @record_fields || superclass.try(:record_fields)
       end
 
       def line_ending
         # Use the default line ending unless otherwise specified
-        @line_ending || superclass.line_ending || DEFAULT_LINE_ENDING
+        @line_ending || superclass.try(:line_ending) || DEFAULT_LINE_ENDING
       end
 
       def default_record_fields
@@ -157,7 +157,7 @@ module Fixy
 
     # Retrieves the list of record fields that were set through the class methods.
     def record_fields
-      self.class.record_fields || self.class.superclass.record_fields
+      self.class.record_fields
     end
 
     # Retrieves the line ending for this record type
