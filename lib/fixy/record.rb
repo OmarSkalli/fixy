@@ -14,7 +14,7 @@ module Fixy
         @line_ending = character
       end
 
-      def field(name, size, range, type)
+      def field(name, size, range, type, &block)
         @record_fields ||= default_record_fields
         range_matches = range.match /^(\d+)(?:-(\d+))?$/
 
@@ -42,19 +42,21 @@ module Fixy
         # We're good to go :)
         @record_fields[range_from] = { name: name, from: range_from, to: range_to, size: size, type: type}
 
-        field_value(name, Proc.new) if block_given?
+        field_value(name, nil, &block) if block_given?
       end
 
       # Convenience method for creating field methods
-      def field_value(name, value)
+      def field_value(name, value, &block)
 
         # Make sure we're not overriding an existing method
         if (private_instance_methods + instance_methods).include?(name)
           raise ArgumentError, "Method '#{name}' is already defined, watch out for conflicts."
         end
 
-        if value.is_a? Proc
-          define_method(name) { self.instance_exec(&value) }
+        if block_given?
+          define_method(name, &block)
+        elsif value.is_a?(Proc)
+          define_method(name, &value)
         else
           define_method(name) { value }
         end
